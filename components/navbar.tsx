@@ -3,9 +3,9 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Menu, X, ChevronRight, Cpu, Leaf, Droplet, ShoppingBag } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { Menu, X, ChevronRight } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { ThemeToggle } from '@/components/theme-toggle';
 
 const navItems = [
   { name: 'Home', href: '#home' },
@@ -23,6 +23,9 @@ export function Navbar() {
     const handleScroll = () => {
       setScrolled(window.scrollY > 20);
     };
+    
+    // Run handleScroll on mount to set initial state
+    handleScroll();
 
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
@@ -33,25 +36,25 @@ export function Navbar() {
   return (
     <header
       className={cn(
-        'fixed top-0 left-0 right-0 z-50 transition-all duration-300',
-        scrolled ? 'glass py-2' : 'bg-transparent py-4'
+        'fixed top-0 left-0 right-0 z-50 transition-colors duration-300',
+        scrolled ? 'glass py-2' : 'bg-transparent py-4 text-gray-300 dark:text-white'
       )}
     >
-      <div className="container mx-auto px-4 md:px-6 flex items-center justify-between">
-      <Link href="/" className="flex items-center space-x-2">
-        <motion.div
-          initial={{ opacity: 0, scale: 0.8 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.5 }}
-          className="relative flex items-center"
-        >
-          <img 
-            src="/images/Radaverse.webp" 
-            alt="Logo" 
-            className="w-auto h-8 md:h-10 transform -translate-y-1 scale-[1.8]" 
-          />
-        </motion.div>
-      </Link>
+      <div className="container mx-auto px-4 flex items-center justify-between">
+        <Link href="/" className="flex items-center space-x-2">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.5 }}
+            className="relative flex items-center"
+          >
+            <img  
+              src="/images/Radaverse.webp" 
+              alt="Logo" 
+              className="w-auto h-8 md:h-10 transform -translate-y-1 scale-[1.8]" 
+            />
+          </motion.div>
+        </Link>
 
         {/* Desktop Navigation */}
         <nav className="hidden md:flex items-center space-x-1">
@@ -73,25 +76,24 @@ export function Navbar() {
           <motion.div
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: 0.6 }}
+            transition={{ delay: 0.7 }}
           >
-            <Button variant="gradient" size="sm" className="ml-4">
-              Get Started
-            </Button>
+            <ThemeToggle />
           </motion.div>
         </nav>
-
         {/* Mobile Menu Button */}
-        <motion.button
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.2 }}
-          className="md:hidden"
-          onClick={toggleMenu}
-          aria-label="Toggle Menu"
-        >
-          {isOpen ? <X size={24} /> : <Menu size={24} />}
-        </motion.button>
+        <div className="md:hidden flex items-center gap-2">
+          <ThemeToggle />
+          <motion.button
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.2 }}
+            onClick={toggleMenu}
+            aria-label="Toggle Menu"
+          >
+            {isOpen ? <X size={24} /> : <Menu size={24} />}
+          </motion.button>
+        </div>
       </div>
 
       {/* Mobile Navigation */}
@@ -123,15 +125,6 @@ export function Navbar() {
                   </Link>
                 </motion.div>
               ))}
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.5 }}
-              >
-                <Button variant="gradient" className="w-full mt-2">
-                  Get Started
-                </Button>
-              </motion.div>
             </div>
           </motion.div>
         )}

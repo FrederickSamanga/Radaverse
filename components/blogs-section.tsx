@@ -117,7 +117,7 @@ export function BlogsSection() {
     : blogPosts;
 
   return (
-    <section className="py-20 bg-gradient-to-b from-slate-900/95 to-slate-950/90" id="blogs">
+    <section className="py-20 bg-gradient-to-b from-white to-gray-100 dark:from-slate-900/95 dark:to-slate-950/90" id="blogs">
       <div className="container mx-auto px-4">
         <motion.div 
           className="text-center mb-16"
@@ -126,8 +126,8 @@ export function BlogsSection() {
           viewport={{ once: true }}
           transition={{ duration: 0.5 }}
         >
-          <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">Latest Insights & Trends</h2>
-          <p className="text-xl text-blue-100/80 max-w-2xl mx-auto">
+          <h2 className="text-3xl md:text-4xl font-bold text-slate-900 dark:text-white mb-4">Latest Insights & Trends</h2>
+          <p className="text-xl text-slate-600 dark:text-blue-100/80 max-w-2xl mx-auto">
             Stay informed with the latest tech developments and innovations from Africa and beyond
           </p>
           
@@ -158,7 +158,7 @@ export function BlogsSection() {
           {filteredPosts.map(post => (
             <motion.div 
               key={post.id}
-              className={`cursor-pointer bg-slate-800/50 backdrop-blur-sm rounded-xl overflow-hidden border border-slate-700/50 shadow-lg transition-all duration-300 ${
+              className={`cursor-pointer bg-white/90 dark:bg-slate-800/50 backdrop-blur-sm rounded-xl overflow-hidden border border-gray-200 dark:border-slate-700/50 shadow-lg transition-all duration-300 ${
                 hoveredPost === post.id ? 'transform -translate-y-2 shadow-xl shadow-blue-900/20' : ''
               }`}
               onClick={() => setSelectedPost(post)}
@@ -167,9 +167,9 @@ export function BlogsSection() {
               variants={itemVariants}
             >
               <div className="relative h-48 overflow-hidden">
-                <div className="absolute inset-0 bg-gradient-to-t from-slate-900 to-transparent opacity-60 z-10"></div>
-                <div className="w-full h-full relative bg-slate-700">
-                  <div className="absolute inset-0 flex items-center justify-center text-slate-600">
+                <div className="absolute inset-0 bg-gradient-to-t from-gray-800 dark:from-slate-900 to-transparent opacity-60 z-10"></div>
+                <div className="w-full h-full relative bg-gray-200 dark:bg-slate-700">
+                  <div className="absolute inset-0 flex items-center justify-center text-gray-400 dark:text-slate-600">
                     <span className="text-lg">{post.title.charAt(0)}</span>
                   </div>
                 </div>
@@ -179,32 +179,32 @@ export function BlogsSection() {
               </div>
               
               <div className="p-6">
-                <div className="flex items-center text-xs text-slate-400 mb-3">
+                <div className="flex items-center text-xs text-gray-500 dark:text-slate-400 mb-3">
                   <Calendar className="w-3 h-3 mr-1" />
                   <span className="mr-3">{post.publishedDate}</span>
                   <Clock className="w-3 h-3 mr-1" />
                   <span>{post.readingTime}</span>
                 </div>
                 
-                <h3 className="text-xl font-bold text-white mb-2 line-clamp-2">{post.title}</h3>
-                <p className="text-slate-300 mb-4 line-clamp-3">{post.excerpt}</p>
+                <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2 line-clamp-2">{post.title}</h3>
+                <p className="text-gray-600 dark:text-slate-300 mb-4 line-clamp-3">{post.excerpt}</p>
                 
                 <div className="flex flex-wrap gap-2 mb-4">
                   {post.tags.map(tag => (
-                    <Badge key={tag} variant="secondary" className="bg-slate-700/50 text-blue-300 hover:bg-slate-700">
+                    <Badge key={tag} variant="secondary" className="bg-gray-200/80 dark:bg-slate-700/50 text-gray-700 dark:text-blue-300 hover:bg-gray-300 dark:hover:bg-slate-700">
                       {tag}
                     </Badge>
                   ))}
                 </div>
                 
                 <div className="flex items-center gap-2 mb-4">
-                  <div className="w-8 h-8 rounded-full overflow-hidden bg-slate-700 flex items-center justify-center text-slate-500">
+                  <div className="w-8 h-8 rounded-full overflow-hidden bg-gray-200 dark:bg-slate-700 flex items-center justify-center text-gray-500 dark:text-slate-500">
                     <span>{post.author.name.charAt(0)}</span>
                   </div>
-                  <span className="text-sm text-slate-300">{post.author.name}</span>
+                  <span className="text-sm text-gray-700 dark:text-slate-300">{post.author.name}</span>
                 </div>
                 
-                <Button variant="link" className="p-0 text-blue-400 hover:text-blue-300 flex items-center gap-1">
+                <Button variant="link" className="p-0 text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 flex items-center gap-1">
                   Read more 
                   <ArrowRight className="w-4 h-4" />
                 </Button>

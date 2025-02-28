@@ -67,7 +67,7 @@ export function HeroSection() {
         <div className="max-w-4xl mx-auto text-center">
             <motion.h1 
             variants={itemVariants}
-            className="text-4xl md:text-5xl lg:text-7xl font-bold mb-6 text-white relative"
+            className="text-2xl md:text-5xl lg:text-7xl font-bold mb-6 text-white relative"
             >
             {'Welcome to Radaverse'.split('').map((char, index) => (
                 <motion.span
@@ -102,14 +102,7 @@ export function HeroSection() {
             className="flex flex-wrap justify-center gap-4"
             variants={itemVariants}
           >
-            <motion.button 
-              onClick={() => router.push('#contact')}
-              className="bg-blue-600 text-white px-8 py-4 rounded-lg font-medium transition-all hover:bg-blue-700 hover:shadow-lg hover:shadow-blue-500/20 hover:-translate-y-1"
-              whileHover={{ scale: 1.03 }}
-              whileTap={{ scale: 0.98 }}
-            >
-              Get Started
-            </motion.button>
+            
             
             <motion.button 
               onClick={scrollToServices}

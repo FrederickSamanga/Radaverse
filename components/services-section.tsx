@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef } from 'react';
+import React, { useState, useRef } from 'react';
 import { motion, useInView, AnimatePresence } from 'framer-motion';
 import { Cpu, Leaf, Droplet, ShoppingBag, ChevronRight, X } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
@@ -142,29 +142,119 @@ export function ServicesSection() {
           animate={isInView ? "visible" : "hidden"}
           className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6"
         >
-          {services.map((service) => (
-            <motion.div key={service.id} variants={itemVariants}>
-              <Card 
-                className={cn(
-                  "h-full overflow-hidden cursor-pointer group hover:shadow-lg transition-all duration-300 border-border/50",
-                  selectedService?.id === service.id ? "ring-2 ring-primary" : ""
-                )}
-                onClick={() => handleServiceClick(service)}
-              >
-                <CardContent className="p-6">
-                  <div className={`w-12 h-12 rounded-lg flex items-center justify-center mb-4 bg-gradient-radial ${service.color}`}>
-                    {service.icon}
+          {services.map((service, serviceIndex) => (
+            <React.Fragment key={service.id}>
+              <motion.div variants={itemVariants}>
+                <Card 
+                  className={cn(
+                    "h-full overflow-hidden cursor-pointer group hover:shadow-lg transition-all duration-300 border-border/50",
+                    selectedService?.id === service.id ? "ring-2 ring-primary" : ""
+                  )}
+                  onClick={() => handleServiceClick(service)}
+                >
+                  <CardContent className="p-6">
+                    <div className={`w-12 h-12 rounded-lg flex items-center justify-center mb-4 bg-gradient-radial ${service.color}`}>
+                      {service.icon}
+                    </div>
+                    <h3 className="text-xl font-bold mb-2 group-hover:text-primary transition-colors">{service.title}</h3>
+                    <p className="text-muted-foreground text-sm mb-4">{service.description}</p>
+                    <div className="flex items-center text-sm text-primary font-medium">
+                      <span>Explore Services</span>
+                      <ChevronRight size={16} className="ml-1 group-hover:translate-x-1 transition-transform" />
+                    </div>
+                  </CardContent>
+                </Card>
+              </motion.div>
+              
+              {/* Service details on mobile - show right after the clicked card */}
+              {selectedService?.id === service.id && (
+                <motion.div
+                  className="md:hidden col-span-1 mt-4"
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: 'auto' }}
+                  exit={{ opacity: 0, height: 0 }}
+                  transition={{ duration: 0.3 }}
+                >
+                  <div className="bg-card rounded-lg border border-border/50 p-6 relative">
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="absolute top-4 right-4"
+                      onClick={closeServiceDetails}
+                    >
+                      <X size={20} />
+                    </Button>
+                    
+                    <div className="flex items-center mb-6">
+                      <div className={`w-12 h-12 rounded-lg flex items-center justify-center mr-4 bg-gradient-radial ${selectedService.color}`}>
+                        {selectedService.icon}
+                      </div>
+                      <h3 className="text-2xl font-bold">{selectedService.title} Services</h3>
+                    </div>
+                    
+                    <div className="grid grid-cols-1 gap-4">
+                      {selectedService.services.map((item, index) => (
+                        <motion.div
+                          key={index}
+                          initial={{ opacity: 0, y: 10 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ duration: 0.3, delay: index * 0.1 }}
+                          className="bg-background rounded-lg p-4 border border-border/50 hover:border-primary/50 transition-colors"
+                        >
+                          <h4 className="font-bold mb-2">{item.name}</h4>
+                          <p className="text-sm text-muted-foreground">{item.description}</p>
+                        </motion.div>
+                      ))}
+                    </div>
                   </div>
-                  <h3 className="text-xl font-bold mb-2 group-hover:text-primary transition-colors">{service.title}</h3>
-                  <p className="text-muted-foreground text-sm mb-4">{service.description}</p>
-                  <div className="flex items-center text-sm text-primary font-medium">
-                    <span>Explore Services</span>
-                    <ChevronRight size={16} className="ml-1 group-hover:translate-x-1 transition-transform" />
-                  </div>
-                </CardContent>
-              </Card>
-            </motion.div>
+                </motion.div>
+              )}
+            </React.Fragment>
           ))}
+
+          {/* Service details for desktop - keep at bottom */}
+          <AnimatePresence>
+            {selectedService && (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: 20 }}
+                transition={{ duration: 0.3 }}
+                className="mt-12 hidden md:block col-span-full bg-card rounded-lg border border-border/50 p-6 relative"
+              >
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="absolute top-4 right-4"
+                  onClick={closeServiceDetails}
+                >
+                  <X size={20} />
+                </Button>
+                
+                <div className="flex items-center mb-6">
+                  <div className={`w-12 h-12 rounded-lg flex items-center justify-center mr-4 bg-gradient-radial ${selectedService.color}`}>
+                    {selectedService.icon}
+                  </div>
+                  <h3 className="text-2xl font-bold">{selectedService.title} Services</h3>
+                </div>
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {selectedService.services.map((item, index) => (
+                    <motion.div
+                      key={index}
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.3, delay: index * 0.1 }}
+                      className="bg-background rounded-lg p-4 border border-border/50 hover:border-primary/50 transition-colors"
+                    >
+                      <h4 className="font-bold mb-2">{item.name}</h4>
+                      <p className="text-sm text-muted-foreground">{item.description}</p>
+                    </motion.div>
+                  ))}
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </motion.div>
         
         <AnimatePresence>

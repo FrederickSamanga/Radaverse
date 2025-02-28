@@ -10,10 +10,25 @@ interface BlogReaderProps {
 }
 
 export function BlogReaderOverlay({ post, onClose }: BlogReaderProps) {
+  const [mounted, setMounted] = useState(false);
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [fontSize, setFontSize] = useState(16);
   const [readingProgress, setReadingProgress] = useState(0);
   const [isBookmarked, setIsBookmarked] = useState(false);
+  
+  // Handle client-side initialization
+  useEffect(() => {
+    // Check user's preference from localStorage or system preference
+    const savedDarkMode = localStorage.getItem('darkMode') === 'true';
+    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    setIsDarkMode(savedDarkMode ?? prefersDark);
+    
+    // Check bookmarked status from localStorage
+    const bookmarked = localStorage.getItem(`bookmark-${post.id}`) === 'true';
+    setIsBookmarked(bookmarked);
+    
+    setMounted(true);
+  }, [post.id]);
 
   // Handle scroll progress
   useEffect(() => {
@@ -32,6 +47,11 @@ export function BlogReaderOverlay({ post, onClose }: BlogReaderProps) {
     return () => element?.removeEventListener('scroll', handleScroll);
   }, []);
 
+  // Only render the full content after client-side hydration is complete
+  if (!mounted) {
+    return null; // Return null on server-side or before hydration
+  }
+  
   return (
     <motion.div
       initial={{ opacity: 0 }}
@@ -65,43 +85,50 @@ export function BlogReaderOverlay({ post, onClose }: BlogReaderProps) {
             <Button variant="ghost" size="icon" onClick={onClose}>
               <X className="w-5 h-5" />
             </Button>
-            <h3 className={`font-semibold ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>
-              {post.title}
-            </h3>
-          </div>
-          
-          <div className="flex items-center gap-2">
-            <Button
+              <h3 className={`font-semibold ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>
+                {post.title}
+              </h3>
+            </div>
+            <div className="flex items-center gap-2">
+              <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => setFontSize(prev => Math.max(12, prev - 2))}
+                  className={isDarkMode ? 'text-white hover:text-white' : 'text-slate-900'}
+              >
+                  <span className="text-sm">A-</span>
+              </Button>
+              <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => setFontSize(prev => Math.min(24, prev + 2))}
+                  className={isDarkMode ? 'text-white hover:text-white' : 'text-slate-900'}
+              >
+                  <span className="text-lg">A+</span>
+              </Button>
+              <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => {
+                    const newValue = !isDarkMode;
+                    setIsDarkMode(newValue);
+                    localStorage.setItem('darkMode', String(newValue));
+                  }}
+                  className={isDarkMode ? 'text-white hover:text-white' : 'text-slate-900'}
+              >
+                  {isDarkMode ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
+              </Button>
+              <Button
                 variant="ghost"
                 size="icon"
-                onClick={() => setFontSize(prev => Math.max(12, prev - 2))}
-                className={isDarkMode ? 'text-white hover:text-white' : 'text-slate-900'}
-            >
-                <span className="text-sm">A-</span>
-            </Button>
-            <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => setFontSize(prev => Math.min(24, prev + 2))}
-                className={isDarkMode ? 'text-white hover:text-white' : 'text-slate-900'}
-            >
-                <span className="text-lg">A+</span>
-            </Button>
-            <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => setIsDarkMode(prev => !prev)}
-                className={isDarkMode ? 'text-white hover:text-white' : 'text-slate-900'}
-            >
-                {isDarkMode ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
-            </Button>
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => setIsBookmarked(prev => !prev)}
-            >
-              <Bookmark className={`w-5 h-5 ${isBookmarked ? 'fill-current' : ''}`} />
-            </Button>
+                onClick={() => {
+                  const newValue = !isBookmarked;
+                  setIsBookmarked(newValue);
+                  localStorage.setItem(`bookmark-${post.id}`, String(newValue));
+                }}
+              >
+                <Bookmark className={`w-5 h-5 ${isBookmarked ? 'fill-current' : ''}`} />
+              </Button>
             <Button variant="ghost" size="icon">
               <Share2 className="w-5 h-5" />
             </Button>
