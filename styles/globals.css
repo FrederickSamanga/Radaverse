@@ -1,0 +1,18 @@
+/* ...existing code */
+
+@layer utilities {
+  .text-shadow-sm {
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+  }
+  .text-shadow-md {
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+  }
+  .text-shadow-lg {
+    text-shadow: 0 4px 6px rgba(0, 0, 0, 0.5);
+  }
+  .text-shadow-xl {
+    text-shadow: 0 8px 16px rgba(0, 0, 0, 0.5);
+  }
+}
+
+/* ...existing code */
