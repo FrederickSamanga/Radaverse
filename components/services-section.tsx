@@ -117,7 +117,7 @@ export function ServicesSection() {
     <section
       id="services"
       ref={sectionRef}
-      className="py-20 md:py-32 bg-muted/30 relative overflow-hidden"
+      className="py-20 md:py-32 bg-background relative overflow-hidden"
     >
       {/* Background decoration */}
       <div className="absolute top-1/4 left-0 w-1/2 h-1/2 bg-gradient-to-br from-primary/5 to-transparent rounded-full blur-3xl" />

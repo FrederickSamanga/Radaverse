@@ -1,7 +1,8 @@
 "use client";
 
-import { useState } from 'react';
 import Link from 'next/link';
+import { useTheme } from 'next-themes';
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { ArrowUp, Mail, Phone, MapPin } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -9,6 +10,20 @@ import { Input } from '@/components/ui/input';
 import { Separator } from '@/components/ui/separator';
 
 export function Footer() {
+  const { theme, resolvedTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
+
+  // After mounted, we can safely show the UI that depends on the theme
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  // Determine which logo to show
+  const currentTheme = resolvedTheme || 'light';
+  const logoSrc = currentTheme === 'dark' 
+    ? "/images/Radaverse-light.webp" 
+    : "/images/Radaverse-dark.webp";
+
   const [email, setEmail] = useState('');
   
   const scrollToTop = () => {
@@ -29,22 +44,20 @@ export function Footer() {
   };
   
   return (
-    <footer className="bg-card relative overflow-hidden pt-16 pb-8">
-      {/* Background decoration */}
-      <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-primary via-secondary to-accent" />
-      <div className="absolute bottom-0 right-0 w-1/4 h-1/4 bg-gradient-to-tl from-primary/5 to-transparent rounded-full blur-3xl" />
-      
-      <div className="container mx-auto px-4 md:px-6 relative z-10">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
+    <footer className="bg-background border-t">
+      <div className="container mx-auto px-4 py-12">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           <div className="space-y-4">
-            <Link href="#home" className="flex items-center space-x-2">
-              <div className="text-primary font-bold text-2xl font-poppins">
-                <img 
-                  src="/images/Radaverse.webp" 
-                  alt="Logo" 
-                  className="w-auto h-8 md:h-10 transform -translate-y-1 scale-[1.8]" 
+            <Link href="/" className="inline-block">
+              {mounted ? (
+                <img
+                  src={logoSrc}
+                  alt="Radaverse Logo"
+                  className="h-8 w-auto"
                 />
-                </div>
+              ) : (
+                <div className="h-8 w-auto" />
+              )}
             </Link>
             <p className="text-muted-foreground text-sm">
               Shaping Tomorrow, Today. Harnessing innovation to transform ideas into reality across multiple industries.

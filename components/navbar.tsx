@@ -6,6 +6,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Menu, X, ChevronRight } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { ThemeToggle } from '@/components/theme-toggle';
+import { useTheme } from 'next-themes';
 
 const navItems = [
   { name: 'Home', href: '#home' },
@@ -18,28 +19,51 @@ const navItems = [
 export function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const { theme, resolvedTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
+
+  // After mounted, we can safely show the UI that depends on the theme
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   useEffect(() => {
     const handleScroll = () => {
       setScrolled(window.scrollY > 20);
     };
     
-    // Run handleScroll on mount to set initial state
-    handleScroll();
-
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
+    // Only add scroll listener after component is mounted
+    if (mounted) {
+      // Run handleScroll on mount to set initial state
+      handleScroll();
+      
+      window.addEventListener('scroll', handleScroll);
+      return () => window.removeEventListener('scroll', handleScroll);
+    }
+  }, [mounted]);
 
   const toggleMenu = () => setIsOpen(!isOpen);
 
-  return (
-    <header
-      className={cn(
+  // Determine which logo to show - only after hydration
+  const currentTheme = mounted ? (resolvedTheme || 'light') : 'light';
+  const logoSrc = currentTheme === 'dark' 
+    ? "/images/Radaverse-light.webp" 
+    : "/images/Radaverse-dark.webp";
+    
+  // Use a consistent initial class to avoid hydration mismatch
+  const headerClassName = mounted 
+    ? cn(
         'fixed top-0 left-0 right-0 z-50 transition-colors duration-300',
-        scrolled ? 'glass py-2' : 'bg-transparent py-4 text-gray-300 dark:text-white'
-      )}
-    >
+        scrolled 
+          ? 'glass py-2' 
+          : currentTheme === 'light'
+            ? 'bg-white/90 py-4 text-gray-800 shadow-sm backdrop-blur-sm'
+            : 'bg-transparent py-4 text-gray-300 dark:text-white'
+      )
+    : 'fixed top-0 left-0 right-0 z-50 transition-colors duration-300 py-4';
+
+  return (
+    <header className={headerClassName}>
       <div className="container mx-auto px-4 flex items-center justify-between">
         <Link href="/" className="flex items-center space-x-2">
           <motion.div
@@ -48,11 +72,15 @@ export function Navbar() {
             transition={{ duration: 0.5 }}
             className="relative flex items-center"
           >
-            <img  
-              src="/images/Radaverse.webp" 
-              alt="Logo" 
-              className="w-auto h-8 md:h-10 transform -translate-y-1 scale-[1.8]" 
-            />
+            {mounted ? (
+              <img  
+              src={logoSrc}
+              alt="Radaverse Logo" 
+              className="w-auto h-8 md:h-10 transform -translate-y-1 scale-[1.4]" 
+              />
+            ) : (
+              <div className="w-auto h-8 md:h-10 transform -translate-y-1 scale-[1.4]" />
+            )}
           </motion.div>
         </Link>
 

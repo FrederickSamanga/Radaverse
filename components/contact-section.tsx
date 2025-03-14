@@ -75,9 +75,9 @@ export function ContactSection() {
                     <Textarea id="message" placeholder="Your message" rows={5} />
                   </div>
                   
-                  <Button type="submit" className="w-full" variant="gradient">
+                    <Button type="submit" className="w-full">
                     <Send className="mr-2 h-4 w-4" /> Send Message
-                  </Button>
+                    </Button>
                 </form>
               </CardContent>
             </Card>

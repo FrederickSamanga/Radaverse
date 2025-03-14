@@ -4,6 +4,7 @@ import { useRef } from 'react';
 import { motion, useInView } from 'framer-motion';
 import { Milestone, Target, TrendingUp } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
+import { useTheme } from 'next-themes';
 
 const timelineItems = [
   {
@@ -32,12 +33,13 @@ const timelineItems = [
 export function VisionSection() {
   const sectionRef = useRef<HTMLElement>(null);
   const isInView = useInView(sectionRef, { once: false, amount: 0.2 });
+  const { resolvedTheme } = useTheme();
   
   return (
     <section
       id="vision"
       ref={sectionRef}
-      className="py-20 md:py-32 bg-muted/30 relative overflow-hidden"
+      className={`py-20 md:py-32 ${resolvedTheme === 'light' ? 'bg-white' : 'bg-muted/30'} relative overflow-hidden`}
     >
       {/* Background decoration */}
       <div className="absolute bottom-0 right-0 w-1/2 h-1/2 bg-gradient-to-tl from-secondary/5 to-transparent rounded-full blur-3xl" />

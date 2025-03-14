@@ -2,23 +2,66 @@
 
 import React, { useEffect, useRef } from 'react';
 import * as THREE from 'three';
+import { useTheme } from 'next-themes';
 
 export default function VanillaThreeScene() {
   const containerRef = useRef<HTMLDivElement>(null);
+  const { theme, resolvedTheme } = useTheme();
+  
+  // Determine the current theme, with fallback to 'dark'
+  const currentTheme = (theme === 'system' ? resolvedTheme : theme) || 'dark';
   
   useEffect(() => {
     if (!containerRef.current) return;
     
+    // Theme-specific colors
+    const colors = {
+      dark: {
+        background: '#020617',
+        fog: '#020617',
+        bubble: '#60a5fa',
+        bubbleEmissive: '#3b82f6',
+        particle: '#4A55A2',
+        particleEmissive: '#1E3A8A',
+        grid: '#4338ca',
+        gridOpacity: 0.25,
+        trail: '#60a5fa',
+        trailEmissive: '#3b82f6',
+        burst: '#EF4444',
+        burstEmissive: '#B91C1C',
+        star: '#ffffff',
+      },
+      light: {
+        background: '#f8fafc', // Light gray/silver background
+        fog: '#e2e8f0', // Light fog
+        bubble: '#3b82f6', // Deeper blue for better visibility
+        bubbleEmissive: '#2563eb',
+        particle: '#64748b', // Gray particles
+        particleEmissive: '#334155', // Darker gray for emissive
+        grid: '#94a3b8', // Medium gray grid
+        gridOpacity: 0.35, // Higher opacity for better visibility
+        trail: '#3b82f6', // Blue trails
+        trailEmissive: '#2563eb',
+        burst: '#ef4444', // Red burst (kept the same)
+        burstEmissive: '#b91c1c',
+        star: '#94a3b8', // Gray stars
+      }
+    };
+    
+    // Get current theme colors - use 'dark' as fallback if theme is not 'light'
+    const themeColors = colors[currentTheme === 'light' ? 'light' : 'dark'];
+    
     // Scene setup
     const scene = new THREE.Scene();
-    scene.fog = new THREE.Fog('#020617', 15, 30);
+    scene.fog = new THREE.Fog(themeColors.fog, 15, 30);
+    scene.background = new THREE.Color(themeColors.background);
     
     // Add bubbles that track cursor movement (desktop only)
     const bubbleCount = 15;
     const bubbles = new THREE.Group();
     const bubbleGeometry = new THREE.SphereGeometry(0.2, 16, 16);
     const bubbleMaterial = new THREE.MeshPhysicalMaterial({
-      color: '#60a5fa',
+      color: themeColors.bubble,
       transparent: true,
       opacity: 0.6,
       roughness: 0.1,
@@ -97,8 +140,6 @@ export default function VanillaThreeScene() {
       });
     };
     
-    scene.background = new THREE.Color('#020617');
-    
     // Detect if device is mobile
     const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
     
@@ -115,15 +156,18 @@ export default function VanillaThreeScene() {
     // Store canvas element for event checking
     const canvasElement = renderer.domElement;
     
-    // Add lights
-    const ambientLight = new THREE.AmbientLight('#ffffff', 0.2);
+    // Add lights - adjusted for theme
+    const ambientLight = new THREE.AmbientLight(
+      '#ffffff', 
+      currentTheme === 'light' ? 0.5 : 0.2
+    );
     scene.add(ambientLight);
     
-    const pointLight = new THREE.PointLight('#60a5fa', 1);
+    const pointLight = new THREE.PointLight(themeColors.bubble, currentTheme === 'light' ? 1.5 : 1);
     pointLight.position.set(10, 10, 10);
     scene.add(pointLight);
     
-    const spotLight = new THREE.SpotLight('#818cf8', 0.5);
+    const spotLight = new THREE.SpotLight('#818cf8', currentTheme === 'light' ? 0.8 : 0.5);
     spotLight.position.set(0, 15, 0);
     spotLight.angle = 0.5;
     spotLight.penumbra = 1;
@@ -135,11 +179,11 @@ export default function VanillaThreeScene() {
     
     // Generate particles
     const material = new THREE.MeshStandardMaterial({
-      color: '#4A55A2',
-      emissive: '#1E3A8A',
-      emissiveIntensity: 0.5,
-      metalness: 0.8,
-      roughness: 0.2,
+      color: themeColors.particle,
+      emissive: themeColors.particleEmissive,
+      emissiveIntensity: currentTheme === 'light' ? 0.3 : 0.5,
+      metalness: currentTheme === 'light' ? 0.6 : 0.8,
+      roughness: currentTheme === 'light' ? 0.4 : 0.2,
     });
     
     const geometry = new THREE.SphereGeometry(0.05, 8, 8);
@@ -156,9 +200,9 @@ export default function VanillaThreeScene() {
     const starCount = isMobile ? 300 : 500; // Reduce count on mobile
     const starGeometry = new THREE.SphereGeometry(0.02, 6, 6);
     const starMaterial = new THREE.MeshBasicMaterial({
-      color: '#ffffff',
+      color: themeColors.star,
       transparent: true,
-      opacity: 0.8
+      opacity: currentTheme === 'light' ? 0.9 : 0.8
     });
 
     const stars = new THREE.Group();
@@ -212,13 +256,13 @@ export default function VanillaThreeScene() {
     
     scene.add(particles);
     
-    // Add grid helper
-    const gridHelper = new THREE.GridHelper(40, 40, '#4338ca', '#3730a3');
+    // Add grid helper with theme-appropriate colors
+    const gridHelper = new THREE.GridHelper(40, 40, themeColors.grid, themeColors.grid);
     gridHelper.position.y = -5;
     const gridMaterial = new THREE.LineBasicMaterial({
-      color: '#3730a3',
+      color: themeColors.grid,
       transparent: true,
-      opacity: 0.1
+      opacity: themeColors.gridOpacity
     });
     gridHelper.material = gridMaterial;
     scene.add(gridHelper);
@@ -361,13 +405,13 @@ export default function VanillaThreeScene() {
       }
     };
     
-    // Create burst effect for click/touch with red theme color
+    // Create burst effect for click/touch with theme-appropriate color
     const createBurstEffect = (position: THREE.Vector3) => {
       // Create particles that explode outward from the click point
       const burstGeometry = new THREE.SphereGeometry(0.1, 8, 8);
       const burstMaterial = new THREE.MeshStandardMaterial({
-        color: '#EF4444',       // Red theme color
-        emissive: '#B91C1C',    // Darker red for emissive
+        color: themeColors.burst,
+        emissive: themeColors.burstEmissive,
         emissiveIntensity: 2,
         transparent: true,
         opacity: 1
@@ -475,8 +519,8 @@ export default function VanillaThreeScene() {
     const trailParticles = new THREE.Group();
     const trailGeometry = new THREE.SphereGeometry(0.08, 8, 8);
     const trailMaterial = new THREE.MeshStandardMaterial({
-      color: '#60a5fa',
-      emissive: '#3b82f6',
+      color: themeColors.trail,
+      emissive: themeColors.trailEmissive,
       emissiveIntensity: 1,
       transparent: true,
       opacity: 0.8
@@ -657,13 +701,12 @@ export default function VanillaThreeScene() {
       window.removeEventListener('resize', handleResize);
 
       // Ensure to remove any added DOM elements and dispose of resources
-      if (containerRef.current) {
-        // Assuming renderer is a Three.js renderer or similar
+      if (containerRef.current && renderer.domElement && renderer.domElement.parentNode) {
         containerRef.current.removeChild(renderer.domElement);
         renderer.dispose();
       }
     };
-  }, []); // Empty dependency array ensures this runs once on mount and cleanup on unmount
+  }, [currentTheme]); // Use currentTheme in dependency array to refresh when theme changes
 
   return (
     <div 
